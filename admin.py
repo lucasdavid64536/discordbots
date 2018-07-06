@@ -14,7 +14,7 @@ from discomaton.factories import bookbinding
 import async_timeout
 
 global admin_perm_id
-admin_perm_id = [419472407816830986]
+admin_perm_id = [404708655578218511]
 
 
 class Admin():
@@ -33,7 +33,7 @@ class Admin():
 		return content 
 
 	@commands.check(is_owner)
-	@commands.command() 
+	@commands.command(aliases= ["execute", "eval", "evaluate"]) 
 	async def exec(self, ctx, *, command):
 		'Execute or evaluate code in python'
 		binder = bookbinding.StringBookBinder(ctx, max_lines=50,prefix='```py', suffix='```')

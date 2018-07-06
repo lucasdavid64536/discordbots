@@ -1,77 +1,130 @@
 #!/usr/bin/env python3.6
 # -*- coding: utf-8 -*-
 import discord
+import random
 from discord.ext import commands
 import logging
 import traceback
 import asyncio
 import os
+from discord import opus
+from asyncio import sleep
+
 
 
 logging.basicConfig(level='INFO')
-bot = commands.Bot(command_prefix='d')
+bot = commands.Bot(command_prefix='e?')
 bot.load_extension("admin")
 bot.remove_command('help')
+bot.load_extension("music")
+OPUS_LIBS = ['libopus-0.x86.dll', 'libopus-0.x64.dll', 'libopus-0.dll', 'libopus.so.0', 'libopus.0.dylib']
 
-    
+def load_opus_lib(opus_libs=OPUS_LIBS):
+    if opus.is_loaded():
+        return True
+    for opus_lib in opus_libs:
+        try:
+            opus.load_opus(opus_lib)
+            return
+        except OSError:
+            pass
+    raise RuntimeError('Could not load an opus lib. Tried %s' % (', '.join(opus_libs)))
+load_opus_lib()
+
+
 @bot.listen()
 async def on_error(message, event, *args, **kwargs):
     await ctx.send(':o: | You __don`t__ have acces to this command!')
     
-@commands.cooldown(1, 5, commands.BucketType.user)     
-@bot.command()
-@commands.has_permissions(ban_members=True)
-async def ban(ctx, member: discord.Member = None):
-    if member is None:
-        await ctx.send("Please provide a user to ban")
-    if member != ctx.author:
-        await ctx.guild.kick(member)
-        await ctx.send(f'{member} just got banned.')
+@commands.cooldown(1, 5, commands.BucketType.user)
+@bot.command(name='8ball')
+async def l8ball(ctx):
+    await ctx.send(random.choice(['● It is certain.', '● It is decidedly so.', '● Without a doubt.', '● Yes - definitely.', '● You may rely on it', '● As I see it, yes.', '● Most likely.', '● Outlook good.', '● Yes.', '● Signs point to yes.', '● Reply hazy, try again', '● Ask again later.', '● Better not tell you now.', '● Cannot predict now.', '● Concentrate and ask again.', '● Don`t count on it.', '● My reply is no.', '● My sources say no', '● Outlook not so good.', '● Very doubtful.' ]))
 
+    
 @commands.cooldown(1, 5, commands.BucketType.user) 
 @bot.command()
 @commands.has_permissions(kick_members=True)
-async def kick(ctx, member: discord.Member = None):
+async def kick(ctx, member: discord.Member = None, *, reason = None):
     if member is None:
-        await ctx.send("Please provide a user to kick")
+        await ctx.send(":x: | Please provide a user to kick")
     if member != ctx.author:
-        await ctx.guild.kick(member)
-        await ctx.send(f'{member} just got kicked.')
-    
+        await member.send(f'You just got kicked by **{ctx.message.author}** on ** {ctx.guild.name}** for **{reason}**')
+        await member.kick()
+        await ctx.send(f':white_check_mark: | **{member}** just got kicked.')
 
+
+@bot.check
+async def botcheck(ctx):
+    return not ctx.message.author.bot
+
+
+@commands.cooldown(1, 5, commands.BucketType.user)     
+@bot.command()
+@commands.has_permissions(ban_members=True)
+async def ban(ctx, member: discord.Member = None, *, reason = None):
+    if member is None:
+        await ctx.send(":x: | Please provide a user to ban")
+    if member != ctx.author and member != ctx.bot.user:
+        await member.send(f'You just got banned by **{ctx.message.author}** on ** {ctx.guild.name}** for **{reason}** ')
+        await member.ban()
+        await ctx.send(f':white_check_mark: | **{member}** just got banned.')
+  
+@bot.command(aliases= ["kitten", "kitty"])
+async def cat(ctx):
+    fp = "cat/{}".format(random.choice(os.listdir("cat")))
+    await ctx.send(file=discord.File(fp))    
         
 @bot.listen()
 async def on_ready():
           print('Logging in as', bot.user.name)
-          await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='Discord Bots Developers'))
+       
 
-            
+@bot.command(aliases= ["clear", "prune", "delete"])
+@commands.has_permissions(manage_channels=True)
+async def purge(ctx, number : int):
+    await ctx.message.delete()
+    await ctx.channel.purge(limit=number)
+    await ctx.message.channel.send(':thumbsup: | Messages deleted succefully!', delete_after=10)            
          
             
 
-@commands.cooldown(1, 5, commands.BucketType.user)  
+@commands.cooldown(1, 5, commands.BucketType.user)
 @bot.command()
 async def help(ctx):
-    """Help"""
-    em = discord.Embed(title="".format(ctx.guild.name), description="", color=discord.Colour.blue())
-    em.set_author(name="Discord Bots Developers Help")
-    em.add_field(name="**help**", value='Shows this message', inline=False)
-    em.add_field(name="**say**", value='Make the bot say whatever you want', inline=False)
-    em.add_field(name="**ping**", value='Check the bot latency', inline=False)
-    em.add_field(name="**search**", value='Search something on google', inline=False)
-    em.add_field(name="**avatar**", value='Get somebody`s avatar', inline=False)
-    em.add_field(name="**playerinfo @<member>**", value="""See somebody`s info
-[NOTE: This works by: |pinfo [id/nickname/name/@name]""", inline=False)
-    em.add_field(name="**serverinfo**", value="""Get all the informations(In the server)
-[NOTE: |sinfo works too]""", inline=False)
-    em.add_field(name="**botinfo**", value="""Get all the bot information
-[NOTE: |binfo works too]""", inline=False)
-    em.add_field(name="**respect**", value='Pay #respect', inline=False)
-    em.add_field(name="**kick**", value='Kicks a member (works only if the members has the Kick permission)', inline=False)
-    em.add_field(name="**ban**", value='Bans a member (works only if the members has the Ban permission)', inline=False)
-    em.set_thumbnail(url=ctx.me.avatar_url)
-    msg = await ctx.send(embed=em)
+    await ctx.author.send("""    Empero commands:
+**e?say** : Make the bot say whatever you want
+**e?ping** : Check the bot latency
+**e?search** : Search something on Google
+**e?avatar** : Get a player's avatar
+**e?8ball** : Ask the Magic 8-Ball""")
+    await ctx.author.send("""
+**e?playerinfo @<member>** : Get a member's info
+**e?serverinfo** Get a guild/server info
+**e?botinfo** : Get the bot info
+**e?lenny** : Just a lenny face
+**e?respect** : Pay #respect
+**e?support** : Returns the BOT support server""")
+    await ctx.author.send("""
+**e?kick** : Kick a member (works only if the player has the Kick perm.)
+**e?ban** : Ban a member (works only if the player has the Ban perm.)
+**e?mass** : Sends a message to all members in a guild (BOT Owner only)
+**e?shutdown** : Shuts down the bot (BOT Owner only)
+**e?purge** : Clears a number of messages (works only if the player has the Manage Channels perm.)
+**e?cat** : Something cute is going on here
+""")
+    await ctx.author.send("""
+**e?play** : Play a song
+**e?stop** : Stops the track
+**e?queue** : See the following tracks
+**e?skip** : Plays the next song
+**e?pause** : Pause the track
+**e?resume** : Unpause the track
+**e?join** : Join a voice channel""")
+    await ctx.send(f':mailbox_with_mail:  | ** {ctx.author.name} ** , check your DMs!')
+
   
+
  
 
  
@@ -79,7 +132,7 @@ async def help(ctx):
 @bot.listen()
 async def on_message(message : discord.Message):
     if bot.user.mentioned_in(message):
-        await message.channel.send(':sleeping: | You woke me up :( . My prefix is `d` , for a list of commands type `dhelp`', delete_after=5)
+        await message.channel.send(':sleeping: | You woke me up :( . My prefix is `e?` , for a list of commands type `e?help`', delete_after=10)
 
 @bot.listen()
 async def on_command_error(ctx, error):
@@ -117,7 +170,7 @@ async def search(ctx, *, query):
 @bot.command()
 async def say(ctx, *, message):
     """Make the BOT say what you want"""
-    await ctx.send(message)
+    await ctx.send(f' ** {ctx.author.name} said: ** {message}')
 
 @commands.is_owner()
 @bot.command()
@@ -131,7 +184,13 @@ async def mass(ctx, *, message):
     await asyncio.gather(*[maybe_send(m) for m in ctx.guild.members])
 
 
-
+@commands.is_owner()
+@bot.command()
+async def shutdown(ctx):
+    await ctx.send('Shutting down...')
+    await sleep(5)
+    await ctx.bot.logout()
+   
 
 
 @commands.cooldown(1, 5, commands.BucketType.user)
@@ -142,7 +201,6 @@ async def ping(ctx):
     em.set_author(name="")
     em.add_field(name="Ping", value='Pong! :ping_pong:', inline=True)
     em.add_field(name="MS", value=f'Took : **{ctx.bot.latency * 1000:,.2f}ms**', inline=True)
-    
     await ctx.send(embed=em)
 
 
@@ -160,11 +218,32 @@ async def avatar(ctx, member: discord.Member=None):
 
 
 
+
+
+
+
+@bot.listen()
+async def on_message(message):
+    if message.content.lower() == 'e?support' and message.author != bot.user:
+        await message.channel.send('The support server is: https://discord.gg/GF3RWsd')
+
+@commands.cooldown(1, 5, commands.BucketType.user)
 @bot.command()
-async def setwatching(ctx):
-    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=message))
+async def invite(ctx):
+    """Gives you the BOT invite link."""
+    await ctx.send("Invite the BOT here: https://discordapp.com/api/oauth2/authorize?client_id=459000712538357760&permissions=201603158&scope=bot")
 
+@commands.cooldown(1, 5, commands.BucketType.user)
+@bot.command()
+async def support(ctx):
+    """Get the lenny face"""
+    await ctx.send("")
 
+@commands.cooldown(1, 5, commands.BucketType.user)
+@bot.command()
+async def lenny(ctx):
+    """Get the lenny face"""
+    await ctx.send("( ͡° ͜ʖ ͡° )")
 
 @commands.cooldown(1, 5, commands.BucketType.user)
 @bot.command()
@@ -212,11 +291,9 @@ async def respect(ctx):
     """Pay respect"""
     em = discord.Embed(title="".format(ctx.guild.name), description="", color=discord.Colour.green())
     em.set_author(name="")
-    em.add_field(name=f"{ctx.author.name}", value='Press :regional_indicator_b: ,:regional_indicator_o: and :regional_indicator_t: to pay respect', inline=True)
+    em.add_field(name=f"{ctx.author.name}", value='Press :regional_indicator_f: to pay respect', inline=True)
     msg = await ctx.send(embed=em)
-    await msg.add_reaction('\N{regional indicator symbol letter b}')
-	await msg.add_reaction('\N{regional indicator symbol letter o}')
-	await msg.add_reaction('\N{regional indicator symbol letter t}')
+    await msg.add_reaction('\N{regional indicator symbol letter f}')
 
 
 @commands.cooldown(1, 5, commands.BucketType.user)
@@ -257,6 +334,19 @@ async def pinfo(ctx, member: discord.Member=None):
     msg = await ctx.send(embed=em)
 
 
+async def presence():
+    await bot.wait_until_ready()
+    while not bot.is_closed():
+        a = 0
+        for i in bot.guilds:
+            for u in i.members:
+                if u.bot == False:
+                    a = a + 1
+
+        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='%s servers | e?help' % (len(bot.guilds))))
+        await sleep(30)
+        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='%s users | e?help' % (len(bot.users))))
+        await sleep(30)
 
 
 
@@ -269,9 +359,9 @@ async def botinfo(ctx):
     em.add_field(name="Name", value=ctx.bot.user.name, inline=True)
     em.add_field(name="ID", value=ctx.bot.user.id, inline=True)
     em.add_field(name="Prefix", value=ctx.bot.command_prefix, inline=True)
-    em.add_field(name="Made with", value='Python 3.6.6', inline=True)
+    em.add_field(name="Made with", value='Python 3.6.5', inline=True)
     em.add_field(name="Tag:", value=ctx.me.discriminator, inline=True)
-    em.add_field(name="Creator", value='<@419472407816830986>', inline=True)
+    em.add_field(name="Creator", value='<@404708655578218511>', inline=True)
     em.add_field(name="Created at", value=ctx.bot.user.created_at, inline=True)
     em.set_thumbnail(url=ctx.me.avatar_url)
     msg = await ctx.send(embed=em)
@@ -289,9 +379,9 @@ async def binfo(ctx):
     em.add_field(name="Name", value=ctx.bot.user.name, inline=True)
     em.add_field(name="ID", value=ctx.bot.user.id, inline=True)
     em.add_field(name="Prefix", value=ctx.bot.command_prefix, inline=True)
-    em.add_field(name="Made with", value='Python 3.6.6', inline=True)
+    em.add_field(name="Made with", value='Python 3.6.5', inline=True)
     em.add_field(name="Tag:", value=ctx.me.discriminator, inline=True)
-    em.add_field(name="Creator", value='<@419472407816830986>', inline=True)
+    em.add_field(name="Creator", value='<@404708655578218511>', inline=True)
     em.add_field(name="Created at", value=ctx.bot.user.created_at, inline=True)
     em.set_thumbnail(url=ctx.me.avatar_url)
     msg = await ctx.send(embed=em)
@@ -299,6 +389,8 @@ async def binfo(ctx):
 
 
 
+
+
+
+bot.loop.create_task(presence())
 bot.run(os.getenv("TOKEN"))
-
-
