@@ -299,7 +299,7 @@ async def presence():
                 if u.bot == False:
                     a = a + 1
 
-        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='Discord Bots Developers'))
+        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='Bots Developers'))
 
 
 
