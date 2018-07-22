@@ -89,7 +89,7 @@ async def help(ctx):
 **A.avatar** : Get a player's avatar
 **A.playerinfo @<member>** : Get a member's info
 **A.serverinfo** Get a guild/server info
-**A.botinfo** : Get the bot info
+**A.info** : Get the bot info
 **A.respect** : Pay #respect
 **A.kick** : Kick a member (works only if the player has the Kick perm.)
 **A.ban** : Ban a member (works only if the player has the Ban perm.)
