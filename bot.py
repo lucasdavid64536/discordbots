@@ -13,7 +13,7 @@ from asyncio import sleep
 
 
 logging.basicConfig(level='INFO')
-bot = commands.Bot(command_prefix='d.')
+bot = commands.Bot(command_prefix='A')
 bot.load_extension("admin")
 bot.remove_command('help')
 OPUS_LIBS = ['libopus-0.x86.dll', 'libopus-0.x64.dll', 'libopus-0.dll', 'libopus.so.0', 'libopus.0.dylib']
@@ -83,18 +83,18 @@ async def purge(ctx, number : int):
 @bot.command()
 async def help(ctx):
     await ctx.author.send("""    Discord Bots Developers commands:
-**dsay** : Make the bot say whatever you want
-**dping** : Check the bot latency
-**dsearch** : Search something on Google
-**davatar** : Get a player's avatar
-**dplayerinfo @<member>** : Get a member's info
-**dserverinfo** Get a guild/server info
-**dbotinfo** : Get the bot info
-**drespect** : Pay #respect
-**dkick** : Kick a member (works only if the player has the Kick perm.)
-**dban** : Ban a member (works only if the player has the Ban perm.)
-**dshutdown** : Shuts down the bot (BOT Owner only)
-**dpurge** : Clears a number of messages (works only if the player has the Manage Channels perm.)""")
+**Asay** : Make the bot say whatever you want
+**Aping** : Check the bot latency
+**Asearch** : Search something on Google
+**Aavatar** : Get a player's avatar
+**Aplayerinfo @<member>** : Get a member's info
+**Aserverinfo** Get a guild/server info
+**Abotinfo** : Get the bot info
+**Arespect** : Pay #respect
+**Akick** : Kick a member (works only if the player has the Kick perm.)
+**Aban** : Ban a member (works only if the player has the Ban perm.)
+**Ashutdown** : Shuts down the bot (BOT Owner only)
+**Apurge** : Clears a number of messages (works only if the player has the Manage Channels perm.)""")
     await ctx.send(f':mailbox_with_mail:  | ** {ctx.author.name} ** , check your DMs!')
 
   
@@ -299,7 +299,7 @@ async def presence():
                 if u.bot == False:
                     a = a + 1
 
-        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='Bots Developers'))
+        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='http://atelier801.ga'))
 
 
 
