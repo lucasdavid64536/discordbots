@@ -13,7 +13,7 @@ from asyncio import sleep
 
 
 logging.basicConfig(level='INFO')
-bot = commands.Bot(command_prefix='A')
+bot = commands.Bot(command_prefix='A.')
 bot.load_extension("admin")
 bot.remove_command('help')
 OPUS_LIBS = ['libopus-0.x86.dll', 'libopus-0.x64.dll', 'libopus-0.dll', 'libopus.so.0', 'libopus.0.dylib']
@@ -83,18 +83,18 @@ async def purge(ctx, number : int):
 @bot.command()
 async def help(ctx):
     await ctx.author.send("""    Discord Bots Developers commands:
-**Asay** : Make the bot say whatever you want
-**Aping** : Check the bot latency
-**Asearch** : Search something on Google
-**Aavatar** : Get a player's avatar
-**Aplayerinfo @<member>** : Get a member's info
-**Aserverinfo** Get a guild/server info
-**Abotinfo** : Get the bot info
-**Arespect** : Pay #respect
-**Akick** : Kick a member (works only if the player has the Kick perm.)
-**Aban** : Ban a member (works only if the player has the Ban perm.)
-**Ashutdown** : Shuts down the bot (BOT Owner only)
-**Apurge** : Clears a number of messages (works only if the player has the Manage Channels perm.)""")
+**A.say** : Make the bot say whatever you want
+**A.ping** : Check the bot latency
+**A.search** : Search something on Google
+**A.avatar** : Get a player's avatar
+**A.playerinfo @<member>** : Get a member's info
+**A.serverinfo** Get a guild/server info
+**A.botinfo** : Get the bot info
+**A.respect** : Pay #respect
+**A.kick** : Kick a member (works only if the player has the Kick perm.)
+**A.ban** : Ban a member (works only if the player has the Ban perm.)
+**A.shutdown** : Shuts down the bot (BOT Owner only)
+**A.purge** : Clears a number of messages (works only if the player has the Manage Channels perm.)""")
     await ctx.send(f':mailbox_with_mail:  | ** {ctx.author.name} ** , check your DMs!')
 
   
@@ -146,6 +146,12 @@ async def say(ctx, *, message):
     """Make the BOT say what you want"""
     await ctx.message.delete()
     await ctx.send(f' ** {message} ** ')
+    
+@commands.cooldown(1, 5, commands.BucketType.user)
+@bot.command()
+async def info(ctx, *, message):
+    """Make the BOT say what you want"""
+    await ctx.send(f' ** this is my webiste http://atelier801.ga sunt jocuri facute de Ateilier801(craked) ** ')
 
 @commands.is_owner()
 @bot.command()
@@ -304,41 +310,12 @@ async def presence():
 
 
 
-@commands.cooldown(1, 5, commands.BucketType.user)  
-@bot.command()
-async def botinfo(ctx):
-    """Get the BOT info"""
-    em = discord.Embed(title="".format(ctx.guild.name), description="", color=discord.Colour.blue())
-    em.set_author(name="BOT Info")
-    em.add_field(name="Name", value=ctx.bot.user.name, inline=True)
-    em.add_field(name="ID", value=ctx.bot.user.id, inline=True)
-    em.add_field(name="Prefix", value=ctx.bot.command_prefix, inline=True)
-    em.add_field(name="Made with", value='Python 3.6.6', inline=True)
-    em.add_field(name="Tag:", value=ctx.me.discriminator, inline=True)
-    em.add_field(name="Creator", value='<@419472407816830986>', inline=True)
-    em.add_field(name="Created at", value=ctx.bot.user.created_at, inline=True)
-    em.set_thumbnail(url=ctx.me.avatar_url)
-    msg = await ctx.send(embed=em)
-    
 
 
 
 
-@commands.cooldown(1, 5, commands.BucketType.user)  
-@bot.command()
-async def binfo(ctx):
-    """Get the BOT info"""
-    em = discord.Embed(title="".format(ctx.guild.name), description="", color=discord.Colour.blue())
-    em.set_author(name="BOT Info")
-    em.add_field(name="Name", value=ctx.bot.user.name, inline=True)
-    em.add_field(name="ID", value=ctx.bot.user.id, inline=True)
-    em.add_field(name="Prefix", value=ctx.bot.command_prefix, inline=True)
-    em.add_field(name="Made with", value='Python 3.6.6', inline=True)
-    em.add_field(name="Tag:", value=ctx.me.discriminator, inline=True)
-    em.add_field(name="Creator", value='<@419472407816830986>', inline=True)
-    em.add_field(name="Created at", value=ctx.bot.user.created_at, inline=True)
-    em.set_thumbnail(url=ctx.me.avatar_url)
-    msg = await ctx.send(embed=em)
+
+
         
 
 
